@@ -5,6 +5,13 @@ baseUri: http://localhost/
 /says:
   get: 
     description: greets with Hello World
+    headers:
+      MyCompany-Correlation-Id:
+        description: Id to track and correlate events through the system
+        type: string
+        required: true
+        pattern: ^[\d\w-]{1,36}$
+        example: 123e4567-e89b-12d3-a456-556642440000
     responses:
       200:
         body:

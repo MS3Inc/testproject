@@ -15,6 +15,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
     <apikit:config name="api-config" raml="api.raml" consoleEnabled="false" doc:name="Router"/>
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/*" doc:name="HTTP"/>
+        <set-session-variable variableName="correlationId" value="#[message.inboundProperties['MyCompany-Correlation-Id']]" doc:name="set correlationId session var"/>
+        <set-variable variableName="flowName" value="#[mule:context.serviceName]" doc:name="set flow name"/>
         <apikit:router config-ref="api-config" doc:name="APIkit Router"/>
         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
@@ -23,6 +25,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <apikit:console config-ref="api-config" doc:name="APIkit Console"/>
     </flow>
     <flow name="get:/says:api-config">
+    	<set-variable variableName="flowName" value="#[mule:context.serviceName]" doc:name="set flow name"/>
         <set-payload value="{&#xA;  &quot;greeting&quot;: &quot;Hello World!&quot;&#xA;}" doc:name="Set Payload"/>
     </flow>
     <apikit:mapping-exception-strategy name="api-apiKitGlobalExceptionMapping">
@@ -48,6 +51,9 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         </apikit:mapping>
         <apikit:mapping statusCode="400">
             <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
+            <set-payload value="Bad request" doc:name="Set Payload"/>
+            <set-variable variableName="logLevel" value="INFO" doc:name="set logLevel flowVar"/>
+            <flow-ref name="buildLogEventAndLog" doc:name="Flow Reference"/>
             <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
             <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload"/>
         </apikit:mapping>
@@ -68,6 +74,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
     </flow>
     <sub-flow name="testprojectSub_Flow">
         <set-variable variableName="flowName" value="#[mule:context.serviceName]" doc:name="set flow name"/>
-        <set-session-variable variableName="correlationId" value="#[message.inboundProperties['correlationId'] == empty ? java.util.UUID.randomUUID().toString() : message.inboundProperties.correlationId]" doc:name="set correlationId session var"/>
+        
     </sub-flow>-->
 </mule>

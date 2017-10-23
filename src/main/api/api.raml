@@ -1,0 +1,15 @@
+#%RAML 1.0
+title: says hello world
+baseUri: http://localhost/
+
+/says:
+  get: 
+    description: greets with Hello World
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "greeting": "Hello World!"
+              }

@@ -12,15 +12,15 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
     <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
     <flow name="testprojectFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/says" allowedMethods="GET" doc:name="HTTP"/>
-        <flow-ref name="testprojectSub_Flow" doc:name="Flow Reference"/>
-        <set-variable variableName="divisor" value="#[(int)(Math.random()*2) == 0 ? 'x' : 1 ]" doc:name="set divisor"/>
+        <flow-ref name="testprojectSub_Flow" doc:name="Flow Reference testprojectSub_Flow"/>
+        <set-variable variableName="divisor" value="#[(int)(Math.random()*2) == 0 ? 'x' : 1 ]" doc:name="set divisor flowVar"/>
         <set-payload value="Hello World  2/#[flowVars.divisor] = #[2/flowVars.divisor]" doc:name="Set Payload"/>
         <catch-exception-strategy doc:name="testprojectCatch_Exception_Strategy">
-            <set-payload value="An unexpected error occured" doc:name="Set Payload"/>
-            <set-variable variableName="logLevel" value="INFO" doc:name="set log level"/>
+            <set-payload value="An unexpected error occured" doc:name="set payload to our error message"/>
+            <set-variable variableName="logLevel" value="ERROR" doc:name="set logLevel flowVar"/>
             <flow-ref name="buildLogEventAndLog" doc:name="Flow Reference"/>
-            <set-payload value="{ &quot;error&quot;:&quot;An exception occured&quot;}" doc:name="Set Payload"/>
-            <set-property propertyName="http.status" value="500" mimeType="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;error&quot;:&quot;An exception occured&quot;}" doc:name="set an error message to return to the client"/>
+            <set-property propertyName="http.status" value="500" mimeType="application/json" doc:name="set the http status to 500"/>
         </catch-exception-strategy>
     </flow>
     <sub-flow name="testprojectSub_Flow">
